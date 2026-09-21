@@ -1,0 +1,28 @@
+name: Build UF896 aboot
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: sudo scripts/install_deps.sh
+
+      - name: Build hyp and aboot
+        run: sudo scripts/build_hyp_aboot.sh
+
+      - name: Upload bootloader
+        uses: actions/upload-artifact@v4
+        with:
+          name: uf896-bootloader
+          path: |
+            files/aboot.mbn
+            files/hyp.mbn
