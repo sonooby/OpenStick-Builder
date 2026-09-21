@@ -16,8 +16,21 @@ jobs:
       - name: Install dependencies
         run: sudo scripts/install_deps.sh
 
+      - name: Patch for UF896
+        run: |
+          sed -i 's/LK2ND_COMPATIBLE="yiming,uz801-v3"/LK2ND_COMPATIBLE="thwc,uf896"/' scripts/build_hyp_aboot.sh
+          echo "=== build_hyp_aboot.sh ==="
+          grep -n "LK2ND_COMPATIBLE" scripts/build_hyp_aboot.sh
+          grep -q 'LK2ND_COMPATIBLE="thwc,uf896"' scripts/build_hyp_aboot.sh
+
       - name: Build hyp and aboot
         run: sudo scripts/build_hyp_aboot.sh
+
+      - name: Verify UF896 aboot
+        run: |
+          echo "=== strings in aboot ==="
+          strings files/aboot.mbn | grep -E 'thwc,uf896|yiming,uz801-v3' || true
+          strings files/aboot.mbn | grep -Fq 'thwc,uf896'
 
       - name: Upload bootloader
         uses: actions/upload-artifact@v4
